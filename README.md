@@ -1,6 +1,6 @@
 # Shadow Mileage
 
-A running tracking app, which doubles as a running data generator
+A running data generator.
 
 ## Getting Started
 
