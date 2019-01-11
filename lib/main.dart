@@ -78,29 +78,61 @@ class _HomePageState extends State<HomePage> {
   LatLng copy(LatLng other) => LatLng(other.latitude, other.longitude);
 
   void _generatePoints() {
-    var base = getBasePoints();
-    const driftCoef = 0.00005;
-    int rounds = generator.nextInt(10) + 3;
+    final base = getBasePoints();
+
+    /// drifting coefficient
+    const driftCoef = 0.00001;
+    const driftLongTermCoef = 0.00002;
+
+    /// delta time in simulated data recording
+    const datapointDt = 1000;
+
+    int rounds = generator.nextInt(15) + 5;
+
+    // generates a pace between 5min/km and 6.5min/km
+    this.pace = generator.nextDouble() * 90 + 300;
+
     var points = List<LatLng>();
     for (int i = 0; i < rounds; i++) {
-      var len = base.length;
-      for (int j = 0; j < len; j++) {
-        LatLng v;
-        v = copy(base[j]);
-        if (generator.nextBool() && j != 0) {
-          v.latitude = (v.latitude + base[j - 1].latitude) / 2;
-          v.longitude = (v.longitude + base[j - 1].longitude) / 2;
+      final len = base.length;
+      for (int j = 1; j < len; j++) {
+        final latLongTermDrift =
+            (generator.nextDouble() - 0.5) * driftLongTermCoef;
+        final lonLongTermDrift =
+            (generator.nextDouble() - 0.5) * driftLongTermCoef;
+        // interpolation
+
+        final dist = distance(base[j].latitude, base[j].longitude,
+            base[j - 1].latitude, base[j - 1].longitude);
+
+        final datapointNum = (dist * pace / datapointDt).ceil();
+
+        for (int k = 0; k < datapointNum; k++) {
+          LatLng v = copy(base[j]);
+
+          v.latitude =
+              (k * v.latitude + (datapointNum - k) * base[j - 1].latitude) /
+                  datapointNum;
+          v.longitude =
+              (k * v.longitude + (datapointNum - k) * base[j - 1].longitude) /
+                  datapointNum;
+
+          v.latitude +=
+              (generator.nextDouble() - 0.5) * driftCoef + latLongTermDrift;
+          v.longitude +=
+              (generator.nextDouble() - 0.5) * driftCoef + lonLongTermDrift;
+          points.add(v);
         }
-        v.latitude += (generator.nextDouble() - 0.5) * driftCoef;
-        v.longitude += (generator.nextDouble() - 0.5) * driftCoef;
-        points.add(v);
       }
     }
+
     double dist = 0;
+
     for (int i = 0; i < points.length - 1; i++) {
       dist += distance(points[i].latitude, points[i].longitude,
           points[i + 1].latitude, points[i + 1].longitude);
     }
+
     setState(() {
       this.mileage = dist / 1000;
       this.polylinePoints = points;
@@ -114,6 +146,13 @@ class _HomePageState extends State<HomePage> {
 
   var generator = Random();
   List<LatLng> polylinePoints = <LatLng>[];
+
+  /// total distance, in kilometers
+  double mileage = 0;
+
+  /// time per kilometer, in seconds
+  double pace = 1;
+
   List<CircleMarker> get markers {
     try {
       if (polylinePoints != null && polylinePoints.length > 1)
@@ -139,8 +178,6 @@ class _HomePageState extends State<HomePage> {
       return [];
     }
   }
-
-  double mileage = 0;
 
   @override
   Widget build(BuildContext context) {
