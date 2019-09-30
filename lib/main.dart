@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ShadowMileage/styles.dart';
+import 'package:ShadowMileage/views/styles.dart';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -7,6 +7,7 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong/latlong.dart';
 
 import 'latlng_transform.dart';
+import 'views/cards.dart';
 
 import 'dart:math';
 
@@ -90,7 +91,7 @@ class _HomePageState extends State<HomePage> {
     int rounds = generator.nextInt(15) + 5;
 
     // generates a pace between 5min/km and 6.5min/km
-    this.pace = generator.nextDouble() * 90 + 300;
+    var pace = generator.nextDouble() * 90 + 300;
 
     var points = List<LatLng>();
     for (int i = 0; i < rounds; i++) {
@@ -135,6 +136,7 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       this.mileage = dist / 1000;
+      this.time = Duration(seconds: (dist * pace).round());
       this.polylinePoints = points;
     });
   }
@@ -151,7 +153,7 @@ class _HomePageState extends State<HomePage> {
   double mileage = 0;
 
   /// time per kilometer, in seconds
-  double pace = 1;
+  Duration time;
 
   List<CircleMarker> get markers {
     try {
@@ -224,19 +226,9 @@ class _HomePageState extends State<HomePage> {
             child: Card(
               margin: EdgeInsets.all(8.0),
               child: InkWell(
-                child: Container(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Text(mileage.toStringAsFixed(1),
-                          style: SStyles.mainTextTheme.display4),
-                      Text(
-                        "km",
-                        style: SStyles.mainTextTheme.body2,
-                      ),
-                    ],
-                  ),
-                  padding: EdgeInsets.all(16.0),
+                child: MileageDisplay(
+                  distance: mileage,
+                  duration: time,
                 ),
                 onTap: () => regeneratePoints(),
               ),

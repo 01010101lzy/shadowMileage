@@ -17,15 +17,13 @@ class SStyles {
     },
   );
   static const int akaneColor = 0xFFEA4242;
-  static const MaterialColor dustColorSwatch = const MaterialColor(
-    dustColor, 
-    const <int, Color>{
-      50: const Color(ceramicColor),
-      300: const Color(dustColor),
-      800: const Color(lightInkColor),
-      900: const Color(inkColor),
-    }
-    );
+  static const MaterialColor dustColorSwatch =
+      const MaterialColor(dustColor, const <int, Color>{
+    50: const Color(ceramicColor),
+    300: const Color(dustColor),
+    800: const Color(lightInkColor),
+    900: const Color(inkColor),
+  });
   static const int ceramicColor = 0xFFF0F4F4;
   static const int dustColor = 0xFFA79599;
   static const int lightInkColor = 0xFF333132;
@@ -33,20 +31,26 @@ class SStyles {
 
   // Text Themes
   static const TextTheme mainTextTheme = const TextTheme(
-    body1: const TextStyle(
-      color: const Color(ceramicColor),
-      fontFamily: 'DDIN'
-    ),
+    body1:
+        const TextStyle(color: const Color(ceramicColor), fontFamily: 'DDIN'),
     body2: const TextStyle(
-      color: const Color(ceramicColor),
-      fontFamily: 'DDIN',
-      fontWeight: FontWeight.w600
-    ),
+        color: const Color(ceramicColor),
+        fontFamily: 'DDIN',
+        fontWeight: FontWeight.w600),
     display4: const TextStyle(
       color: const Color(ceramicColor),
       fontFamily: 'DDIN_Cond',
       fontSize: 64.0,
-    )
+    ),
+    display3: const TextStyle(
+      color: const Color(ceramicColor),
+      fontFamily: "DDIN_Cond",
+      fontSize: 48.0,
+    ),
+    display1: const TextStyle(
+      color: const Color(ceramicColor),
+      fontFamily: "DDIN_Cond",
+      fontSize: 24.0,
+    ),
   );
-
 }
